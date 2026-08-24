@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="sq" data-theme="system">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Akademia — Menaxheri i Studentëve | 7Scantech</title>
+  <meta name="description"
+    content="Projekt shabllon për JavaScript Advanced: module, klasa, async/await, Fetch, Storage API, Web API dhe Chart.js." />
+
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+
+  <!--
+    MËSIMI: Java 11 — përdorimi i një BIBLIOTEKE të jashtme.
+    Chart.js vjen nga CDN dhe krijon variablën globale `Chart`.
+    `defer` = shkarkohet paralelisht, ekzekutohet para se faqja të bëhet gati.
+    Nëse jeni offline, aplikacioni PUNON — vetëm grafikët zëvendësohen
+    me një mesazh (shih js/charts/gradeCharts.js).
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+</head>
+
+<body>
+  <!-- ===================================================== SHIRITI I SIPËRM -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="logo" aria-hidden="true">7S</span>
+      <div>
+        <h1 class="topbar__title">Akademia</h1>
+        <p class="topbar__subtitle">Menaxheri i studentëve · JavaScript Advanced</p>
+      </div>
+    </div>
+
+    <!-- Citat i ditës: mbushet me Fetch API (Java 6) -->
+    <blockquote class="quote" id="quoteBox" aria-live="polite">
+      <p class="quote__text" id="quoteText">Po marrim citatin e ditës…</p>
+      <footer class="quote__author" id="quoteAuthor"></footer>
+    </blockquote>
+
+    <div class="topbar__actions">
+      <button class="btn btn--ghost" id="themeToggle" type="button" title="Ndrysho temën (tasti T)"
+        aria-label="Ndrysho temën">
+        <span id="themeIcon">◐</span>
+        <span class="btn__label" id="themeLabel">Sistemi</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================================== TABS -->
+  <nav class="tabs" role="tablist" aria-label="Seksionet e aplikacionit">
+    <button class="tab" role="tab" data-tab="panel" type="button"><span aria-hidden="true">▦</span> Paneli</button>
+    <button class="tab" role="tab" data-tab="students" type="button"><span aria-hidden="true">☰</span>
+      Studentët</button>
+    <button class="tab" role="tab" data-tab="lab" type="button"><span aria-hidden="true">⚗</span> Laboratori</button>
+    <button class="tab" role="tab" data-tab="lesson" type="button"><span aria-hidden="true">✦</span> Harta e
+      mësimit</button>
+  </nav>
+
+  <main class="main">
+
+    <!-- ============================================== PAMJA 1: PANELI -->
+    <section class="view" data-view="panel" role="tabpanel" aria-label="Paneli">
+
+      <div class="stat-grid" id="statGrid">
+        <article class="stat">
+          <p class="stat__label">Studentë</p>
+          <p class="stat__value" id="statTotal">0</p>
+          <p class="stat__hint" id="statTotalHint">Asnjë student i regjistruar</p>
+        </article>
+
+        <article class="stat">
+          <p class="stat__label">Mesatarja</p>
+          <p class="stat__value" id="statAverage">0</p>
+          <p class="stat__hint">Mediana: <strong id="statMedian">0</strong></p>
+        </article>
+
+        <article class="stat">
+          <p class="stat__label">Kalueshmëria</p>
+          <p class="stat__value" id="statPassRate">0%</p>
+          <div class="meter" role="img" aria-label="Përqindja e kalueshmërisë">
+            <div class="meter__fill" id="statPassMeter" style="width: 0%"></div>
+          </div>
+        </article>
+
+        <article class="stat">
+          <p class="stat__label">Më i mirë</p>
+          <p class="stat__value stat__value--sm" id="statTop">—</p>
+          <!--
+            Secila vlerë ka ID-në e vet dhe mbushet me `textContent`.
+            ⚠️ MOS e zëvendësoni këtë me një `innerHTML` të vetëm: do t'i
+            fshinte këta <strong> me ID dhe vizatimi i dytë do pëlciste.
+          -->
+          <p class="stat__hint">
+            Nota <strong id="statTopGrade">—</strong> ·
+            Mosha mesatare <strong id="statAge">0</strong>
+          </p>
+        </article>
+      </div>
+
+      <div class="card-grid">
+        <section class="card">
+          <header class="card__head">
+            <h2>Notat sipas studentit</h2>
+            <span class="badge" id="chartNote"></span>
+          </header>
+          <div class="chart-box"><canvas id="chartGrades"></canvas></div>
+        </section>
+
+        <section class="card">
+          <header class="card__head">
+            <h2>Shpërndarja e notave</h2>
+          </header>
+          <div class="chart-box chart-box--sm"><canvas id="chartDistribution"></canvas></div>
+        </section>
+      </div>
+
+      <section class="card">
+        <header class="card__head">
+          <h2>Sipas kursit</h2>
+          <span class="hint">Llogaritur me <code>groupBy → map → sort</code></span>
+        </header>
+        <div id="courseBreakdown" class="breakdown"></div>
+      </section>
+
+      <p class="chart-fallback" id="chartFallback" hidden>
+        Chart.js nuk u ngarkua (ndoshta jeni offline). Të gjitha funksionet e tjera punojnë normalisht.
+      </p>
+    </section>
+
+    <!-- ============================================ PAMJA 2: STUDENTËT -->
+    <section class="view" data-view="students" role="tabpanel" aria-label="Studentët" hidden>
+
+      <div class="split">
+        <!-- ---------------------------------------------- FORMULARI -->
+        <section class="card card--sticky">
+          <header class="card__head">
+            <h2 id="formTitle">Shto student</h2>
+            <button class="btn btn--ghost btn--sm" id="cancelEditBtn" type="button" hidden>Anulo</button>
+          </header>
+
+          <!--
+            `novalidate` → e çaktivizojmë validimin e shfletuesit, sepse
+            duam t'a shkruajmë vetë me REGEX (Java 9).
+          -->
+          <form id="studentForm" novalidate autocomplete="off">
+            <input type="hidden" id="editingId" value="" />
+
+            <div class="field">
+              <label for="name">Emri dhe mbiemri <span class="req">*</span></label>
+              <input type="text" id="name" name="name" placeholder="Ardit Krasniqi" />
+              <p class="field__error" data-error="name" aria-live="polite"></p>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="age">Mosha <span class="req">*</span></label>
+                <input type="number" id="age" name="age" min="6" max="100" placeholder="21" />
+                <p class="field__error" data-error="age" aria-live="polite"></p>
+              </div>
+
+              <div class="field">
+                <label for="grade">Nota <span class="req">*</span></label>
+                <select id="grade" name="grade">
+                  <option value="">Zgjedh…</option>
+                </select>
+                <p class="field__error" data-error="grade" aria-live="polite"></p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="course">Kursi</label>
+              <select id="course" name="course"></select>
+              <p class="field__error" data-error="course" aria-live="polite"></p>
+            </div>
+
+            <div class="field">
+              <label for="email">Email <span class="opt">(opsional)</span></label>
+              <input type="text" id="email" name="email" placeholder="ardit@example.com" />
+              <p class="field__error" data-error="email" aria-live="polite"></p>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn--primary" type="submit" id="submitBtn">Ruaj studentin</button>
+              <button class="btn btn--ghost" type="reset">Pastro</button>
+            </div>
+          </form>
+
+          <hr class="rule" />
+
+          <h3 class="mini-title">Veprime të shpejta</h3>
+          <div class="quick-actions">
+            <button class="btn btn--soft btn--sm" id="seedBtn" type="button">🌱 Mbush me shembuj</button>
+            <button class="btn btn--soft btn--sm" id="importApiBtn" type="button">🌐 Importo nga API</button>
+            <button class="btn btn--soft btn--sm" id="exportBtn" type="button">⬇ Shkarko JSON</button>
+            <label class="btn btn--soft btn--sm" for="importFile">⬆ Lexo JSON</label>
+            <input type="file" id="importFile" accept="application/json,.json" hidden />
+            <button class="btn btn--danger btn--sm" id="clearAllBtn" type="button">🗑 Fshij të gjithë</button>
+          </div>
+        </section>
+
+        <!-- ------------------------------------------------- LISTA -->
+        <section class="card">
+          <header class="card__head">
+            <h2>Lista</h2>
+            <span class="badge" id="visibleCount">0</span>
+          </header>
+
+          <div class="toolbar">
+            <div class="search">
+              <span class="search__icon" aria-hidden="true">⌕</span>
+              <input type="search" id="searchInput" placeholder="Kërko emër, email, kurs… (tasti /)"
+                aria-label="Kërko student" />
+            </div>
+
+            <select id="courseFilter" aria-label="Filtro sipas kursit"></select>
+            <select id="statusFilter" aria-label="Filtro sipas statusit">
+              <option value="all">Të gjithë</option>
+              <option value="passing">Vetëm kalues</option>
+              <option value="failing">Vetëm pa kaluar</option>
+            </select>
+            <select id="sortSelect" aria-label="Rendit"></select>
+
+            <button class="btn btn--ghost btn--sm" id="resetFiltersBtn" type="button" hidden>✕ Hiq filtrat</button>
+          </div>
+
+          <!--
+            MËSIMI: Java 9 — <template> + cloneNode().
+            Përmbajtja brenda <template> NUK vizatohet dhe NUK ekzekutohet.
+            Ne e klonojmë për secilin student — më shpejt dhe më e sigurt
+            se ndërtimi i HTML-së me string (mbrojtje ndaj XSS).
+          -->
+          <template id="studentCardTemplate">
+            <li class="student" data-id="">
+              <span class="avatar" data-slot="initials"></span>
+
+              <div class="student__body">
+                <p class="student__name">
+                  <span data-slot="name"></span>
+                  <span class="chip" data-slot="grade"></span>
+                </p>
+                <p class="student__meta">
+                  <span data-slot="course"></span> ·
+                  <span data-slot="age"></span> vjeç ·
+                  <span data-slot="created"></span>
+                </p>
+                <p class="student__email" data-slot="email"></p>
+              </div>
+
+              <div class="student__actions">
+                <button class="icon-btn" data-action="edit" type="button" title="Ndrysho">✎</button>
+                <button class="icon-btn icon-btn--danger" data-action="delete" type="button" title="Fshij">🗑</button>
+              </div>
+            </li>
+          </template>
+
+          <ul class="student-list" id="studentList"></ul>
+
+          <div class="empty" id="emptyState" hidden>
+            <p class="empty__icon" aria-hidden="true">🎓</p>
+            <p class="empty__title">Asnjë student për t'u shfaqur</p>
+            <p class="empty__text" id="emptyText">Shtoni një student ose shtypni «Mbush me shembuj».</p>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- =========================================== PAMJA 3: LABORATORI -->
+    <section class="view" data-view="lab" role="tabpanel" aria-label="Laboratori" hidden>
+
+      <p class="lead">
+        Katër eksperimente të vogla. Hapni <strong>Console</strong> (F12) paralelisht —
+        çdo demo shkruan edhe atje.
+      </p>
+
+      <div class="card-grid card-grid--labs">
+
+        <!-- ---------------------------------------- EVENT LOOP LAB -->
+        <section class="card lab">
+          <header class="card__head">
+            <h2>⏱ Event Loop</h2>
+            <span class="pill">Java 8</span>
+          </header>
+          <p class="lab__intro">
+            Kodi më poshtë ekzekutohet nga lart poshtë — por rezultati <em>nuk</em>
+            del në atë rend. Shikoni pse.
+          </p>
+          <pre class="code"><code>console.log("1 · sinkron");
+setTimeout(() =&gt; log("4 · macrotask"), 0);
+Promise.resolve().then(() =&gt; log("3 · microtask"));
+console.log("2 · sinkron");</code></pre>
+          <div class="lab__actions">
+            <button class="btn btn--primary btn--sm" id="eventLoopRun" type="button">▶ Ekzekuto</button>
+            <button class="btn btn--ghost btn--sm" id="eventLoopBlock" type="button">🥶 Blloko 1.5s</button>
+            <button class="btn btn--ghost btn--sm" id="eventLoopClear" type="button">Pastro</button>
+          </div>
+          <ol class="log" id="eventLoopOutput" aria-live="polite"></ol>
+        </section>
+
+        <!-- ------------------------------------- CALLBACK / PROMISE -->
+        <section class="card lab">
+          <header class="card__head">
+            <h2>🔀 Callback → Promise → async</h2>
+            <span class="pill">Java 5 · 6</span>
+          </header>
+          <p class="lab__intro">
+            E njëjta kërkesë, tre stile. Aktivizoni «Simulo gabim» për të
+            provuar <code>catch</code> në secilin stil.
+          </p>
+          <label class="switch">
+            <input type="checkbox" id="failToggle" />
+            <span>Simulo gabim serveri (500)</span>
+          </label>
+          <div class="lab__actions">
+            <button class="btn btn--soft btn--sm" id="callbackBtn" type="button">Callback</button>
+            <button class="btn btn--soft btn--sm" id="promiseBtn" type="button">Promise</button>
+            <button class="btn btn--soft btn--sm" id="asyncBtn" type="button">async / await</button>
+            <button class="btn btn--soft btn--sm" id="raceBtn" type="button">Sekuencial vs Paralel</button>
+            <button class="btn btn--ghost btn--sm" id="asyncClear" type="button">Pastro</button>
+          </div>
+          <ol class="log" id="asyncOutput" aria-live="polite"></ol>
+        </section>
+
+        <!-- --------------------------------------------- WEB API LAB -->
+        <section class="card lab">
+          <header class="card__head">
+            <h2>🌍 Web APIs</h2>
+            <span class="pill">Java 10</span>
+          </header>
+          <p class="lab__intro">
+            Geolocation dhe Notifications kërkojnë <strong>leje</strong> dhe
+            funksionojnë vetëm në <code>http://localhost</code> ose <code>https</code>.
+          </p>
+          <div class="lab__actions">
+            <button class="btn btn--soft btn--sm" id="geoBtn" type="button">📍 Sa larg është kampusi?</button>
+            <button class="btn btn--soft btn--sm" id="notifyBtn" type="button">🔔 Testo njoftimin</button>
+            <button class="btn btn--soft btn--sm" id="onlineBtn" type="button">📶 Statusi i rrjetit</button>
+            <button class="btn btn--ghost btn--sm" id="webApiClear" type="button">Pastro</button>
+          </div>
+          <ol class="log" id="webApiOutput" aria-live="polite"></ol>
+        </section>
+
+        <!-- --------------------------------------------- STORAGE LAB -->
+        <section class="card lab">
+          <header class="card__head">
+            <h2>💾 Storage</h2>
+            <span class="pill">Java 10</span>
+          </header>
+          <p class="lab__intro">
+            <code>localStorage</code> mbijeton rifreskimin; <code>sessionStorage</code>
+            fshihet kur mbyllet tab-i. Provoni: ndryshoni filtrat, rifreskoni faqen.
+          </p>
+          <div class="lab__actions">
+            <button class="btn btn--soft btn--sm" id="storageRefresh" type="button">↻ Rifresko raportin</button>
+          </div>
+          <table class="table" id="storageTable">
+            <thead>
+              <tr>
+                <th>Çelësi</th>
+                <th>Lloji</th>
+                <th class="right">Bajtë</th>
+              </tr>
+            </thead>
+            <tbody id="storageBody"></tbody>
+          </table>
+        </section>
+      </div>
+    </section>
+
+    <!-- ======================================= PAMJA 4: HARTA E MËSIMIT -->
+    <section class="view" data-view="lesson" role="tabpanel" aria-label="Harta e mësimit" hidden>
+      <p class="lead">
+        Çdo javë e syllabus-it → skedarët ku e gjeni në praktikë.
+        Kliko një javë për t'a hapur.
+      </p>
+      <div class="lesson-map" id="lessonMap"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>
+      <strong>7Scantech Academy</strong> · JavaScript Advanced ·
+      Shabllon projekti <span id="appVersion"></span>
+    </p>
+    <p class="footer__hint">
+      Shkurtesa: <kbd>/</kbd> kërko · <kbd>T</kbd> temë · <kbd>Ctrl</kbd>+<kbd>Z</kbd> kthe fshirjen · <kbd>1–4</kbd>
+      tabs
+    </p>
+  </footer>
+
+  <!-- Toastet mblidhen këtu -->
+  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
+
+  <!--
+    <dialog> është element NATIV — pa bibliotekë.
+    `showModal()` bllokon faqen, `Esc` e mbyll vetë, fokusi kapet brenda.
+  -->
+  <dialog class="modal" id="confirmDialog">
+    <h2 class="modal__title" id="confirmTitle">A jeni i sigurt?</h2>
+    <p class="modal__text" id="confirmText"></p>
+    <div class="modal__actions">
+      <button class="btn btn--ghost" id="confirmCancel" type="button" value="cancel">Anulo</button>
+      <button class="btn btn--danger" id="confirmOk" type="button" value="ok">Vazhdo</button>
+    </div>
+  </dialog>
+
+  <!--
+    NJË PIKË HYRJE E VETME. `type="module"` jep:
+      • import / export (Java 4)
+      • `defer` automatik
+      • strict mode automatik
+      • scope të vetin (pa ndotur `window`)
+    ⚠️ Modulet kërkojnë server → hapni me Live Server, jo me dopio-klik!
+  -->
+  <script type="module" src="../js/main.js"></script>
+
+  <noscript>
+    <p style="padding:2rem;text-align:center">Ky projekt kërkon JavaScript të aktivizuar.</p>
+  </noscript>
+</body>
+
+</html>

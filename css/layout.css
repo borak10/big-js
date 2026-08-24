@@ -1,0 +1,429 @@
+/* ============================================================================
+   layout.css — KAWAII PIXEL UI 🎀🕹️
+   ============================================================================ */
+
+
+/* ─────────────────────────────────────────────────────────── TOP BAR */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+
+    min-height: 76px;
+    padding: var(--space-3) var(--space-5);
+
+    background: color-mix(
+        in srgb,
+        var(--surface) 92%,
+        transparent
+    );
+
+    backdrop-filter: blur(12px) saturate(140%);
+
+    border-bottom: 2px solid var(--border);
+}
+
+/* ─────────────────────────────────────────────────────────── BRAND */
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+
+/* ─────────────────────────────────────────────────────────── LOGO */
+
+.logo {
+  display: grid;
+  place-items: center;
+
+  width: 46px;
+  height: 46px;
+
+  border-radius: 13px;
+
+  background:
+    linear-gradient(135deg,
+      var(--accent),
+      #c7b6ff);
+
+  color: #fff;
+
+  font-weight: 900;
+  font-size: var(--text-base);
+
+  letter-spacing: -0.03em;
+
+  /* Chunky pixel-game shadow */
+  border: 3px solid #d38eaf;
+
+  box-shadow:
+    0 4px 0 #c77fa2,
+    0 7px 12px rgba(180, 120, 160, 0.15);
+
+  transition:
+    transform var(--fast) ease,
+    box-shadow var(--fast) ease;
+}
+
+.logo:hover {
+  transform: translateY(-2px) rotate(-3deg);
+
+  box-shadow:
+    0 6px 0 #c77fa2,
+    0 10px 16px rgba(180, 120, 160, 0.18);
+}
+
+.logo:active {
+  transform: translateY(2px);
+
+  box-shadow:
+    0 2px 0 #c77fa2;
+}
+
+
+/* ─────────────────────────────────────────────────────────── TITLE */
+
+.topbar__title {
+  font-size: var(--text-lg);
+  letter-spacing: -0.02em;
+
+  color: var(--text);
+
+  /* Slightly playful */
+  text-shadow: 1px 1px 0 var(--accent-soft);
+}
+
+.topbar__subtitle {
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+
+/* ─────────────────────────────────────────────────────────── ACTIONS */
+
+.topbar__actions {
+  margin-left: auto;
+
+  display: flex;
+  gap: var(--space-2);
+
+  flex-shrink: 0;
+}
+
+
+/* ───────────────────────────────────────────────────────────────── TABS */
+
+.tabs {
+    position: sticky;
+    top: 76px;
+    z-index: 25;
+
+    display: flex;
+
+    gap: 6px;
+
+    padding: 8px 20px;
+
+    background: color-mix(
+        in srgb,
+        var(--surface) 94%,
+        transparent
+    );
+
+    backdrop-filter: blur(10px);
+
+    border-bottom: 2px solid var(--border);
+
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+
+/* ─────────────────────────────────────────────────────────── TAB */
+
+.tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 9px 15px;
+
+    background: transparent;
+
+    border: 2px solid transparent;
+    border-radius: 12px;
+
+    color: var(--muted);
+
+    font-size: var(--text-sm);
+    font-weight: 650;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background 150ms ease,
+        color 150ms ease,
+        transform 150ms ease;
+}
+
+.tab:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-2px);
+}
+
+.tab--active {
+    background: var(--accent-soft);
+    border-color: #d4b8f0;
+    color: #8659b8;
+
+    box-shadow: 0 3px 0 #d4b8f0;
+}
+
+.tab--active:hover {
+  background: var(--accent-hover);
+
+  color: var(--accent-text);
+
+  transform: translateY(-2px);
+}
+
+
+/* ───────────────────────────────────────────────────────────────── MAIN */
+
+.main {
+    width: min(1400px, calc(100% - 48px));
+    max-width: 1400px;
+
+    margin: 0 auto;
+    padding: 28px 0 40px;
+
+    display: grid;
+    gap: 24px;
+}
+
+/* ─────────────────────────────────────────────────────────────── VIEWS */
+
+.view {
+  display: grid;
+
+  gap: var(--space-5);
+
+  animation:
+    kawaii-pop var(--slow) var(--ease);
+}
+
+
+/* Slightly bouncy entrance */
+
+@keyframes kawaii-pop {
+
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.005);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
+/* ─────────────────────────────────────────────────────────────── LEAD */
+
+.lead {
+  color: var(--text-soft);
+
+  max-width: 68ch;
+
+  line-height: 1.7;
+}
+
+
+/* ───────────────────────────────────────────────────────── CARD GRIDS */
+
+.stat-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(220px, 1fr));
+
+    gap: 18px;
+}
+
+
+.card-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(420px, 1fr));
+
+    gap: 18px;
+}
+
+
+.card-grid--labs {
+  grid-template-columns:
+    repeat(auto-fit,
+      minmax(min(400px, 100%), 1fr));
+}
+
+
+/* ─────────────────────────────────────────────────────────────── SPLIT */
+
+.split {
+  display: grid;
+
+  grid-template-columns:
+    minmax(300px, 380px) minmax(0, 1fr);
+
+  gap: var(--space-5);
+
+  align-items: start;
+}
+
+
+/* ───────────────────────────────────────────────────────── RESPONSIVE */
+
+@media (max-width: 900px) {
+
+  .split {
+    grid-template-columns: 1fr;
+  }
+
+  .card--sticky {
+    position: static !important;
+  }
+
+  .tabs {
+    top: 76px;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+  }
+
+  .quote {
+    order: 3;
+    width: 100%;
+  }
+}
+
+
+/* ────────────────────────────────────────────────────────────── FOOTER */
+
+.footer {
+  border-top: 3px solid var(--border);
+
+  padding: var(--space-5);
+
+  text-align: center;
+
+  color: var(--muted);
+
+  font-size: var(--text-sm);
+
+  display: grid;
+
+  gap: var(--space-2);
+
+  background: var(--surface-2);
+}
+
+.footer__hint {
+  font-size: var(--text-xs);
+}
+
+
+/* ───────────────────────────────────────────────────── PIXEL DECORATION */
+
+/*
+   Tiny decorative pixels around the footer.
+*/
+
+.footer::before {
+  content: "✦  ♡  ✦";
+
+  display: block;
+
+  color: var(--accent);
+
+  font-size: var(--text-sm);
+
+  letter-spacing: 8px;
+
+  margin-bottom: var(--space-2);
+}
+
+
+/* ─────────────────────────────────────────────────────────── ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .view {
+    animation: none;
+  }
+
+  .logo,
+  .tab {
+    transition: none;
+  }
+
+  .main::before {
+    content: "✦";
+
+    position: fixed;
+    top: 110px;
+    left: 3%;
+
+    font-size: 24px;
+    color: #d3b1ff;
+
+    opacity: 0.7;
+
+    pointer-events: none;
+}
+
+.main::after {
+    content: "♡";
+
+    position: fixed;
+    right: 4%;
+    bottom: 8%;
+
+    font-size: 30px;
+    color: #ffb5d2;
+
+    opacity: 0.6;
+
+    pointer-events: none;
+  }
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(210px, 100%), 1fr)
+    );
+
+    gap: var(--space-4);
+
+    align-items: stretch;
+  }
+}

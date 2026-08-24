@@ -1,0 +1,123 @@
+/* ============================================================================
+   tokens.css — KAWAII PIXEL THEME 🎀
+   ============================================================================ */
+
+
+    :root {
+    /* ── KAWAII PASTEL THEME ───────────────────────────── */
+
+    --bg: #fff4fb;
+
+    --bg-glow:
+        radial-gradient(800px 500px at 10% 0%, #ffd9ee 0%, transparent 60%),
+        radial-gradient(700px 500px at 95% 10%, #dcd8ff 0%, transparent 60%),
+        radial-gradient(600px 400px at 50% 100%, #d9f7f1 0%, transparent 60%);
+
+    --surface: #fffaff;
+    --surface-2: #fff0f8;
+    --surface-3: #f3eaff;
+
+    --text: #51445c;
+    --text-soft: #76657f;
+    --muted: #a28fa9;
+
+    --border: #ead8e9;
+    --border-strong: #d9bdd9;
+
+    --accent: #c79cff;
+    --accent-hover: #b985f5;
+    --accent-soft: #f0e4ff;
+    --accent-text: #ffffff;
+
+    --ok: #8ed8b5;
+    --ok-soft: #e4f8ed;
+
+    --warn: #ffd58a;
+    --warn-soft: #fff3d9;
+
+    --danger: #ff9aaa;
+    --danger-soft: #ffe7ec;
+
+    --info: #91c9ff;
+    --info-soft: #e5f2ff;
+
+    /* cute soft shadows */
+    --shadow-sm:
+        0 2px 0 #ead8e9;
+
+    --shadow:
+        0 4px 0 #ead8e9,
+        0 10px 25px rgba(170, 130, 180, 0.12);
+
+    --shadow-lg:
+        0 8px 0 #e3cde3,
+        0 18px 40px rgba(170, 130, 180, 0.18);
+
+    --ring:
+        0 0 0 4px rgba(199, 156, 255, 0.25);
+
+    /* slightly rounder */
+    --radius-sm: 8px;
+    --radius: 12px;
+    --radius-lg: 20px;
+    --radius-full: 999px;
+}
+
+/* ============================================================================
+   SYSTEM DARK MODE
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+
+    :root:not([data-theme="light"]):not([data-theme="dark"]) {
+
+        --bg: #211b29;
+
+        --bg-glow:
+            radial-gradient(800px 500px at 10% -10%,
+                #4a2945 0%,
+                transparent 60%),
+            radial-gradient(700px 450px at 100% 0%,
+                #292650 0%,
+                transparent 60%);
+
+        --surface: #2b2435;
+        --surface-2: #332b40;
+        --surface-3: #3c324b;
+
+        --text: #0a0709;
+        --text-soft: #dec9da;
+        --muted: #ae96ad;
+
+        --border: #513b50;
+        --border-strong: #6b4d67;
+
+        --accent: #e59ac0;
+        --accent-hover: #f0add0;
+        --accent-soft: #4a3043;
+        --accent-text: #291c27;
+
+        --ok: #8bd1ac;
+        --ok-soft: #263d32;
+
+        --warn: #f0c776;
+        --warn-soft: #44361e;
+
+        --danger: #ee8794;
+        --danger-soft: #48282f;
+
+        --info: #8dbde7;
+        --info-soft: #26394c;
+
+        --shadow-sm:
+            0 3px 0 #18131d;
+
+        --shadow:
+            0 5px 0 #18131d,
+            0 8px 18px rgba(0, 0, 0, 0.3);
+
+        --shadow-lg:
+            0 7px 0 #18131d,
+            0 14px 30px rgba(0, 0, 0, 0.4);
+    }
+}

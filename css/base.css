@@ -1,0 +1,220 @@
+/* ============================================================================
+ * base.css  —  Rivendosje (reset) dhe elementë bazë
+ * ==========================================================================*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.6;
+
+    color: var(--text);
+
+    background:
+        radial-gradient(
+            circle at 10% 15%,
+            rgba(255, 190, 225, 0.35),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 90% 20%,
+            rgba(205, 190, 255, 0.35),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(180, 240, 220, 0.25),
+            transparent 30%
+        ),
+        var(--bg);
+
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    min-height: 100vh;
+}
+
+/* ============================================================================
+ * ⚠️  RRESHTI MË I RËNDËSISHËM NË TË GJITHË CSS-IN E KËSAJ FAQEJE
+ *
+ * Shfletuesi vjen me `[hidden] { display: none }` — por ai është stil i
+ * *user-agent*-it, dhe ÇDO stil i yni fiton ndaj tij. Pra `.view { display:
+ * grid }` e MUND `[hidden]`, dhe `element.hidden = true` nuk fsheh më asgjë.
+ *
+ * Pa këtë rresht, të katër tabs shfaqen njëherësh dhe "gjendja boshe" del
+ * bashkë me listën. (Bug i vërtetë, i kapur nga testi në shfletues.)
+ *
+ * Këtu `!important` është i justifikuar: `hidden` shpreh QËLLIM ("kjo nuk
+ * është për t'u shfaqur"), nuk është sugjerim stilistik.
+ * ==========================================================================*/
+[hidden] {
+  display: none !important;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.25;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: var(--text-xl);
+}
+
+h2 {
+  font-size: var(--text-lg);
+}
+
+h3 {
+  font-size: var(--text-base);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code,
+kbd,
+pre,
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+code {
+  background: var(--surface-3);
+  padding: 0.1em 0.4em;
+  border-radius: var(--radius-sm);
+}
+
+kbd {
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.45em;
+  font-size: var(--text-xs);
+  color: var(--text-soft);
+}
+
+hr.rule {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: var(--space-4) 0;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+/* --- Kontrollet e formularit: pamje e njësuar ---------------------------- */
+input,
+select,
+button,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="search"],
+input[type="email"],
+select {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease),
+    background-color var(--fast) var(--ease);
+}
+
+input:hover,
+select:hover {
+  border-color: var(--border-strong);
+}
+
+input:focus,
+select:focus,
+button:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--ring);
+}
+
+/* Fusha me gabim validimi (klasa vendoset nga ui/form.js) */
+input.invalid,
+select.invalid {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+input::placeholder {
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 16px) 52%, calc(100% - 11px) 52%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 2rem;
+  cursor: pointer;
+}
+
+/* Fokus i dukshëm vetëm për tastierë — jo për mouse. Aksesueshmëri. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* Respekto përdoruesit që kërkojnë më pak animacion. */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
